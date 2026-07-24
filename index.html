@@ -9,19 +9,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg-color: #F3DCA3;
-    --text-color: #333;
+    --bg-color: #f0f4f8;
+    --text-color: #222;
     --shadow-color: rgba(0,0,0,0.1);
     --hover-shadow-color: rgba(0,0,0,0.2);
     --filter-tag-bg: #fff;
     --filter-tag-hover: #e0f7fa;
-    --figure-bg: #F3DCA3;
+    --figure-bg: #ffffff;
     --figure-shadow: rgba(0,0,0,0.1);
-    --caption-color: #606060;
-    --blue-color: #66ccff;
+    --caption-color: #555;
+    --blue-color: #4a90e2;
+    --primary-color: #4a90e2;
+    --secondary-color: #7ed6df;
   }
   body.dark-mode {
-    --bg-color: #121212;
+    --bg-color: #222;
     --text-color: #eee;
     --shadow-color: rgba(0,0,0,0.6);
     --hover-shadow-color: rgba(0,0,0,0.8);
@@ -30,6 +32,9 @@
     --figure-bg: #222;
     --figure-shadow: rgba(0,0,0,0.7);
     --caption-color: #aaa;
+    --blue-color: #2980b9;
+    --primary-color: #2980b9;
+    --secondary-color: #3498db;
   }
   *:focus { outline: none; box-shadow: none; }
   * {
@@ -41,113 +46,123 @@
     color: var(--text-color);
     display: flex; min-height: 100vh;
   }
+  /* Sidebar styles */
   #sidebar {
     position: fixed; top: 0; left: 0; height: 100%;
     background: var(--figure-bg);
-    box-shadow: 2px 0 4px var(--shadow-color);
-    padding: 10px; display: flex; flex-direction: column; align-items: center;
-    width: 140px; overflow: hidden; z-index: 1000;
+    box-shadow: 2px 0 8px var(--shadow-color);
+    padding: 20px 15px;
+    display: flex; flex-direction: column; align-items: center;
+    width: 160px; overflow-y: auto; z-index: 1000;
+    transition: background 0.3s;
+  }
+  #sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  #sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
   }
   #mode-toggle {
-    position: fixed; top: 10px; right: 10px; font-size: 1.2em;
-    background: none; border: none; cursor: pointer; z-index: 1100;
+    position: fixed; top: 15px; right: 15px; font-size: 1.5em;
+    background: transparent; border: none; cursor: pointer; z-index: 1100;
+    transition: transform 0.2s;
+  }
+  #mode-toggle:hover {
+    transform: scale(1.2);
   }
   #sidebar input[type="search"] {
-    margin-top: 0; width: 100%; padding: 8px 12px; border-radius: 12px;
-    border: 1px solid #ccc; font-family: 'Ubuntu'; font-size: 14px;
+    margin-top: 15px; width: 100%; padding: 10px 15px; border-radius: 20px;
+    border: 1px solid #ccc; font-family: 'Ubuntu'; font-size: 14px; transition: box-shadow 0.3s, border-color 0.3s;
   }
-  #sidebar-search:focus {
-    box-shadow: 0 0 8px rgba(10, 193, 142, 0.6);
-    border-color: #0AC18E;
+  #sidebar input[type="search"]:focus {
+    box-shadow: 0 0 8px #2980b9;
+    border-color: #2980b9;
   }
-  #main-title {
-    font-family: 'Pacifico', cursive; font-size: 2em; margin: 20px 0 10px 0; color: var(--blue-color);
-  }
-  #sidebar-title {
-    font-family: 'Pacifico', cursive; font-size: 1.2em; text-align: center; margin: 10px 0 15px 0; color: var(--blue-color);
-    letter-spacing: 1px; line-height: 1.2em; font-weight: normal;
-  }
+  /* Removed sidebar title as per request */
   #categoriesContainer {
-    display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 10px;
+    display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 20px;
   }
+  /* Buttons */
   .category-btn {
-    padding: 8px 12px; font-family: 'Ubuntu'; font-size: 1em; font-weight: bold;
-    border: 1px solid #555; border-radius: 4px; background: var(--category-bg, #fff);
-    cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    padding: 10px; width: 100%; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #fff; font-family: 'Ubuntu'; font-weight: bold; font-size: 0.9em;
+    cursor: pointer; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s;
+  }
+  .category-btn:hover {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+  /* Main content styles */
+#content {
+    margin-left: 160px; padding: 30px 20px; flex: 1;
+    transition: margin-left 0.3s;
+  }
+@media (max-width: 768px) {
+  #sidebar {
+    width: 140px;
+    padding: 15px 10px;
   }
   #content {
-    margin-left: 140px; padding: 20px; flex: 1;
+    margin-left: 140px;
+  }
+}
+  #main-title {
+    font-family: 'Pacifico', cursive; font-size: 2.5em; margin-bottom: 20px; color: var(--blue-color);
+    text-align: center;
   }
   #figures {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;
-  }
-  @media (min-width: 1200px) {
-    #figures { grid-template-columns: repeat(6, 1fr); }
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;
   }
   figure {
     background: var(--figure-bg); border-radius: 12px; box-shadow: 0 4px 8px var(--figure-shadow);
-    padding: 10px; display: flex; flex-direction: row; align-items: flex-start; transition: 0.3s; cursor: pointer; position: relative;
+    padding: 15px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.3s;
+    position: relative;
   }
   figure:hover {
-    transform: translateY(-4px); box-shadow: 0 12px 20px rgba(0,0,0,0.7);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.2);
   }
-  figure a { display: flex; flex-direction: row; align-items: center; }
-  figure img { width: 70px; height: 70px; object-fit: contain; border-radius: 8px; margin-right: 10px; }
-  .fig-details {
-    display: flex; flex-direction: column; justify-content: flex-start; flex: 1; position: relative;
+  figure a { display: flex; flex-direction: column; align-items: center; }
+  figure img {
+    width: 80px; height: 80px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; transition: transform 0.3s;
   }
-  .fig-text {
-    display: flex; flex-direction: column;
+  figure img:hover {
+    transform: scale(1.05);
   }
   figcaption {
-    margin-top: 4px; font-size: 0.75em; font-weight: bold; color: var(--caption-color); text-align: left;
+    font-family: 'Pacifico', cursive; font-size: 1.1em; margin-top: 8px; color: var(--caption-color);
+    text-align: center;
   }
   .stats {
-    margin-top: 4px; font-size: 0.75em; font-style: italic; color: var(--caption-color);
-  }
-  /* hide stats initially, show when 'show-stats' class added */
-  .fig-details .stats {
+    margin-top: 6px; font-size: 0.85em; font-style: italic; color: var(--caption-color);
     display: none;
+    text-align: center;
   }
   .show-stats .stats {
     display: block;
   }
-  /* Fully updated "i" icon styles for subtlety - all figures */
-  .info-icon {
-    position: absolute; bottom: 8px; right: 8px;
-    width: 16px; height: 16px; /* smaller size */
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; /* smaller font size */
-    font-weight: normal; /* less bold */
-    color: #222; 
-    background: rgba(255,255,255,0.6); /* less opaque background for subtlety */
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    transition: background 0.2s, transform 0.2s, opacity 0.2s;
-    opacity: 0.6; /* reduced opacity for subtlety */
-  }
-  .info-icon:hover {
-    background: rgba(255,255,255,0.8);
-    transform: scale(1.05);
-    opacity: 1; /* full opacity on hover for better feedback */
-  }
+  /* Info icon, now removed info icons from figures */
+  /* .info-icon { ... } */ /* Removed as per request */
+  /* Back to top button */
   #backToTop {
     position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
-    background: var(--blue-color); color: #fff; border: none; border-radius: 50%; font-size: 1.5em;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px var(--shadow-color); cursor: pointer;
-    transition: opacity 0.5s ease, transform 0.2s ease;
+    background: var(--primary-color); color: #fff; border: none; border-radius: 50%; font-size: 1.5em;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px var(--shadow-color);
+    cursor: pointer; transition: all 0.3s;
   }
   #backToTop.hidden {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0; pointer-events: none;
   }
   #backToTop:hover {
-    background: #55bbee; transform: scale(1.1);
+    background: #2980b9; transform: scale(1.1);
   }
-  .message-container a {
+  /* Additional styles for message links if needed */
+.message-container a {
     color: var(--blue-color); text-decoration: underline;
-  }
+}
 </style>
 </head>
 
@@ -155,14 +170,16 @@
         async src="//gc.zgo.at/count.js"></script>
 <body>
 
+<!-- Dark Mode Toggle -->
 <button id="mode-toggle" title="Toggle Light/Dark">🌙</button>
 
+<!-- Sidebar -->
 <div id="sidebar">
-  <div id="sidebar-title">Unspent<br>Library</div>
+  <!-- Removed title as per request -->
   <input type="search" id="sidebar-search" placeholder="Search..." />
   <div id="categoriesContainer">
     <button class="category-btn" data-filter="All"><span>All</span></button>
-    <button class="category-btn" data-filter="Water and Hygiene"><span>Water and Hygiene</span></button>
+    <button class="category-btn" data-filter="Water and Hygiene"><span>Water & Hygiene</span></button>
     <button class="category-btn" data-filter="Hunger"><span>Hunger</span></button>
     <button class="category-btn" data-filter="Homelessness"><span>Homelessness</span></button>
     <button class="category-btn" data-filter="Environment"><span>Environment</span></button>
@@ -170,18 +187,21 @@
   </div>
 </div>
 
+<!-- Main Content -->
 <div id="content">
-  <div id="figures" style="margin-top:20px;"></div>
+  <h1 id="main-title">Unspent Library</h1>
+  <div id="figures"></div>
 </div>
 
+<!-- Back to Top Button -->
 <div id="backToTop">↑</div>
 
 <script>
 const figures = [
-    { href: "https://unspent.cash/s?q=eJxbKeLPXbigc2Whxc%2FyGRoWr%2BfmlEsxNLcDAHgMCfs%3D", src: "https://i.postimg.cc/WhhBvVgX/eatbch.png", caption: "eatBCH", subcaption: "Hunger" },
-    { href: "https://unspent.cash/s?q=eJwrWymSLzSVO30Nv5%2Fkk3XaCw9OqzV5%2F2J5xxoAhj0L9g%3D%3D", src: "https://i.postimg.cc/8Ft68f9T/koala.png", caption: "Currumbin Wildlife Hospital", subcaption: "Animals" },
-    { href: "https://unspent.cash/s?q=eJwrWyly6%2FGBQ1J7kj4zcBz4NT1vk0%2FSztpbHWsAtGYOCQ%3D%3D", src: "https://i.postimg.cc/jnzqbG26/elephants.png", caption: "Global Sanctuary for Elephants", subcaption: "Animals" },
-    { href: "https://unspent.cash/s?q=eJwrWylS6OEXxvnDZ%2BWUlatMS%2F%2FlXzeU2jazYw0AkugMKg%3D%3D", src: "https://i.postimg.cc/xNKj2W8y/treehousehumane.png", caption: "Tree House Humane Society", subcaption: "Animals" },
+    { href: "https://unspent.cash/s?q=eJxbKeLPXbigc2Whxc%2FyGRoWr%2BfmlEsxNLcDAHgMCfs%3D", src: "https://i.postimg.cc/WhhBvVgX/eatbch.png", caption: "eatBCH", stats: "Hunger" },
+    { href: "https://unspent.cash/s?q=eJwrWymSLzSVO30Nv5%2Fkk3XaCw9OqzV5%2F2J5xxoAhj0L9g%3D%3D", src: "https://i.postimg.cc/8Ft68f9T/koala.png", caption: "Currumbin Wildlife Hospital", stats: "Animals" },
+    { href: "https://unspent.cash/s?q=eJwrWyly6%2FGBQ1J7kj4zcBz4NT1vk0%2FSztpbHWsAtGYOCQ%3D%3D", src: "https://i.postimg.cc/jnzqbG26/elephants.png", caption: "Global Sanctuary for Elephants", stats: "Animals" },
+    { href: "https://unspent.cash/s?q=eJwrWylS6OEXxvnDZ%2BWUlatMS%2F%2FlXzeU2jazYw0AkugMKg%3D%3D", src: "https://i.postimg.cc/xNKj2W8y/treehousehumane.png", caption: "Tree House Humane Society", stats: "Animals" },
 ];
 
 function shuffleArray(array) {
@@ -196,12 +216,11 @@ function populateFigures() {
   container.innerHTML = '';
   figures.forEach(item => {
     const figure = document.createElement('figure');
-    figure.setAttribute('data-category', item.subcaption);
+    figure.setAttribute('data-category', item.stats);
     figure.onclick = () => {
       figure.classList.toggle('show-stats');
     };
 
-    // Build the inner HTML
     let figureHTML = `
       <a href="${item.href}" target="_blank" rel="noopener noreferrer">
         <img src="${item.src}">
@@ -211,21 +230,14 @@ function populateFigures() {
           <figcaption>${item.caption}</figcaption>
           <div class="stats">${item.stats || ''}</div>
         </div>
+        <!-- Removed info icon for subcaption as per request -->
       </div>
     `;
-
-    // Only add the "i" icon if stats exist
-    if (item.stats && item.stats.trim() !== '') {
-      figureHTML += `<div class="info-icon" title="Show/hide stats">i</div>`;
-    }
-
     figure.innerHTML = figureHTML;
 
-    // Add click handler for the "i" icon if it exists
-    if (item.stats && item.stats.trim() !== '') {
-      const infoIcon = figure.querySelector('.info-icon');
-      infoIcon.onclick = (e) => {
-        e.stopPropagation();
+    if (item.stats) {
+      // toggle for stats
+      figure.onclick = () => {
         figure.classList.toggle('show-stats');
       };
     }
@@ -246,7 +258,7 @@ function filterFigures(type, value) {
         fig.style.display = 'none';
       }
     } else if (type === 'search') {
-      if (value === 'all' || category.includes(value) || captionText.includes(value) || statsText.includes(value)) {
+      if (value === '' || category.includes(value) || captionText.includes(value) || statsText.includes(value)) {
         fig.style.display = '';
       } else {
         fig.style.display = 'none';
@@ -256,16 +268,13 @@ function filterFigures(type, value) {
 }
 
 const backBtn = document.getElementById('backToTop');
-
-// Initially hide the button
 backBtn.classList.add('hidden');
-
 let hideTimeout = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   // Dark mode toggle
-  document.body.classList.add('dark-mode');
   const modeToggle = document.getElementById('mode-toggle');
+  document.body.classList.add('dark-mode');
   modeToggle.innerHTML = '🌙';
   modeToggle.onclick = () => {
     document.body.classList.toggle('dark-mode');
@@ -281,31 +290,27 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('sidebar-search').addEventListener('input', e => {
     filterFigures('search', e.target.value.toLowerCase());
   });
+  // Glow effect on focus
+  document.getElementById('sidebar-search').addEventListener('focus', () => {
+    document.getElementById('sidebar-search').style.boxShadow = '0 0 8px #2980b9';
+  });
+  document.getElementById('sidebar-search').addEventListener('blur', () => {
+    document.getElementById('sidebar-search').style.boxShadow = '';
+  });
 
   // Category buttons
   document.querySelectorAll('.category-btn').forEach(btn => {
     btn.onclick = () => { filterFigures('category', btn.dataset.filter); };
   });
 
-  // Back to top fade out after scrolling stops
-  // Button initially hidden
-  backBtn.classList.add('hidden');
-
+  // Back to top
   window.addEventListener('scroll', () => {
-    // Show the button when scrolling
     backBtn.classList.remove('hidden');
-
-    // Clear previous timeout if any
-    if (hideTimeout) {
-      clearTimeout(hideTimeout);
-    }
-    // Set timeout to hide after 2 seconds of no scroll
+    if (hideTimeout) clearTimeout(hideTimeout);
     hideTimeout = setTimeout(() => {
       backBtn.classList.add('hidden');
     }, 2000);
   });
-
-  // Back to top click
   document.getElementById('backToTop').onclick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
