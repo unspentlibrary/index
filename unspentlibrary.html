@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nebulacash</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-color: #F3DCA3;
+    --text-color: #333;
+    --shadow-color: rgba(0,0,0,0.1);
+    --hover-shadow-color: rgba(0,0,0,0.2);
+    --filter-tag-bg: #fff;
+    --filter-tag-hover: #e0f7fa;
+    --figure-bg: #F3DCA3;
+    --figure-shadow: rgba(0,0,0,0.1);
+    --caption-color: #606060;
+    --blue-color: #66ccff;
+  }
+  body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #eee;
+    --shadow-color: rgba(0,0,0,0.6);
+    --hover-shadow-color: rgba(0,0,0,0.8);
+    --filter-tag-bg: #333;
+    --filter-tag-hover: #555;
+    --figure-bg: #222;
+    --figure-shadow: rgba(0,0,0,0.7);
+    --caption-color: #aaa;
+  }
+  *:focus { outline: none; box-shadow: none; }
+  * {
+    box-sizing: border-box; margin: 0; padding: 0; cursor: default;
+  }
+  body {
+    font-family: 'Ubuntu', Arial, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    display: flex; min-height: 100vh;
+  }
+  #sidebar {
+    position: fixed; top: 0; left: 0; height: 100%;
+    background: var(--figure-bg);
+    box-shadow: 2px 0 4px var(--shadow-color);
+    padding: 10px; display: flex; flex-direction: column; align-items: center;
+    width: 140px; overflow: hidden; z-index: 1000;
+  }
+  #mode-toggle {
+    position: fixed; top: 10px; right: 10px; font-size: 1.2em;
+    background: none; border: none; cursor: pointer; z-index: 1100;
+  }
+  #sidebar input[type="search"] {
+    margin-top: 0; width: 100%; padding: 8px 12px; border-radius: 12px;
+    border: 1px solid #ccc; font-family: 'Ubuntu'; font-size: 14px;
+  }
+  #sidebar-search:focus {
+    box-shadow: 0 0 8px rgba(10, 193, 142, 0.6);
+    border-color: #0AC18E;
+  }
+  #main-title {
+    font-family: 'Pacifico', cursive; font-size: 2em; margin: 20px 0 10px 0; color: var(--blue-color);
+  }
+  #sidebar-title {
+    font-family: 'Pacifico', cursive; font-size: 1.2em; text-align: center; margin: 10px 0 15px 0; color: var(--blue-color);
+    letter-spacing: 1px; line-height: 1.2em; font-weight: normal;
+  }
+  #categoriesContainer {
+    display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 10px;
+  }
+  .category-btn {
+    padding: 8px 12px; font-family: 'Ubuntu'; font-size: 1em; font-weight: bold;
+    border: 1px solid #555; border-radius: 4px; background: var(--category-bg, #fff);
+    cursor: pointer; transition: background 0.2s, border-color 0.2s;
+  }
+  #content {
+    margin-left: 140px; padding: 20px; flex: 1;
+  }
+  #figures {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;
+  }
+  @media (min-width: 1200px) {
+    #figures { grid-template-columns: repeat(6, 1fr); }
+  }
+  figure {
+    background: var(--figure-bg); border-radius: 12px; box-shadow: 0 4px 8px var(--figure-shadow);
+    padding: 10px; display: flex; flex-direction: row; align-items: flex-start; transition: 0.3s; cursor: pointer; position: relative;
+  }
+  figure:hover {
+    transform: translateY(-4px); box-shadow: 0 12px 20px rgba(0,0,0,0.7);
+  }
+  figure a { display: flex; flex-direction: row; align-items: center; }
+  figure img { width: 70px; height: 70px; object-fit: contain; border-radius: 8px; margin-right: 10px; }
+  .fig-details {
+    display: flex; flex-direction: column; justify-content: flex-start; flex: 1; position: relative;
+  }
+  .fig-text {
+    display: flex; flex-direction: column;
+  }
+  figcaption {
+    margin-top: 4px; font-size: 0.75em; font-weight: bold; color: var(--caption-color); text-align: left;
+  }
+  .stats {
+    margin-top: 4px; font-size: 0.75em; font-style: italic; color: var(--caption-color);
+  }
+  /* hide stats initially, show when 'show-stats' class added */
+  .fig-details .stats {
+    display: none;
+  }
+  .show-stats .stats {
+    display: block;
+  }
+  /* Fully updated "i" icon styles for subtlety - all figures */
+  .info-icon {
+    position: absolute; bottom: 8px; right: 8px;
+    width: 16px; height: 16px; /* smaller size */
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; /* smaller font size */
+    font-weight: normal; /* less bold */
+    color: #222; 
+    background: rgba(255,255,255,0.6); /* less opaque background for subtlety */
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: background 0.2s, transform 0.2s, opacity 0.2s;
+    opacity: 0.6; /* reduced opacity for subtlety */
+  }
+  .info-icon:hover {
+    background: rgba(255,255,255,0.8);
+    transform: scale(1.05);
+    opacity: 1; /* full opacity on hover for better feedback */
+  }
+  #backToTop {
+    position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+    background: var(--blue-color); color: #fff; border: none; border-radius: 50%; font-size: 1.5em;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px var(--shadow-color); cursor: pointer;
+    transition: opacity 0.5s ease, transform 0.2s ease;
+  }
+  #backToTop.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #backToTop:hover {
+    background: #55bbee; transform: scale(1.1);
+  }
+  .message-container a {
+    color: var(--blue-color); text-decoration: underline;
+  }
+</style>
+</head>
+
+<script data-goatcounter="https://nebulacash.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<body>
+
+<button id="mode-toggle" title="Toggle Light/Dark">🌙</button>
+
+<div id="sidebar">
+  <div id="sidebar-title">Nebulacash</div>
+  <input type="search" id="sidebar-search" placeholder="Search..." />
+  <div id="categoriesContainer">
+    <button class="category-btn" data-filter="All"><span>All</span></button>
+    <button class="category-btn" data-filter="Self Custody"><span>Self Custody</span></button>
+    <button class="category-btn" data-filter="Privacy"><span>Privacy</span></button>
+    <button class="category-btn" data-filter="Informational"><span>Informational</span></button>
+    <button class="category-btn" data-filter="Explorers"><span>Explorers</span></button>
+    <button class="category-btn" data-filter="DeFi Community"><span>DeFi Community</span></button>
+  </div>
+</div>
+
+<div id="content">
+  <div id="figures" style="margin-top:20px;"></div>
+</div>
+
+<div id="backToTop">↑</div>
+
+<script>
+const figures = [
+    // Defi Community
+    { href: "https://unspent.cash/s?q=eJwrWykiPMuu4%2B8N06mfMgJUHWVm6P79aGDdsQYAldALxA%3D%3D", src: "https://i.postimg.cc/6y9zw96R/dwellers.png", caption: "DwellersArt <b>Unspent</b>", stats: "3D Animator" },
+    { href: "https://paytrie.com/", src: "https://i.postimg.cc/mc6svf6X/paytrie.png", caption: "Paytrie", subcaption: "DeFi Community", stats: "The best place for stablecoins" },
+    { href: "https://www.bulkbuddy.co/", src: "https://i.postimg.cc/dhP92h11/bulkbuddy.png", caption: "BulkBuddy", subcaption: "DeFi Community", stats: "Online Dispensary" },
+    { href: "https://www.cryptorefills.com/en", src: "https://i.postimg.cc/ZWtL8WRT/cryptorefills.png", caption: "Cryptorefills", subcaption: "DeFi Community", stats: "Gift Cards and Mobile Top Ups" },
+    { href: "https://app.cauldron.quest/swap/5932b2fd4915d6a75d3ec53282cd49118149a2176ee67ed68b1111ff0786f7fc", src: "https://i.postimg.cc/NLTr7LCV/LIFT.png", caption: "LIFT", subcaption: "DeFi Community", stats: "Stake to Earn on Cauldron DEX" },
+    { href: "https://app.cauldron.quest/swap/d9ab24ed15a7846cc3d9e004aa5cb976860f13dac1ead05784ee4f4622af96ea", src: "https://i.postimg.cc/BLynqgYd/furu.png", caption: "FURU", subcaption: "DeFi Community", stats: "Stake to Earn on Cauldron DEX" },
+    { href: "https://app.cauldron.quest/swap/80cf212abf3b910f097c2d94eeb04d8e929d4ae6e3ad9c7b1df6cfff35b8ed71", src: "https://i.postimg.cc/fVcysQG2/CELQ.png", caption: "CELQ", subcaption: "DeFi Community", stats: "Stake to Earn on Cauldron DEX" },
+    { href: "https://unspent.cash/s?q=eJxbKeLPXbigc2Whxc%2FyGRoWr%2BfmlEsxNLcDAHgMCfs%3D", src: "https://i.postimg.cc/WhhBvVgX/eatbch.png", caption: "eatBCH Unspent", subcaption: "DeFi Community" },
+    { href: "https://unspent.cash/s?q=eJwrWykykbedNf759fc8pXPbP%2B24mb%2FzAFNMxxoAn5gNDA%3D%3D", src: "https://i.postimg.cc/qzpfj032/bchguru.png", caption: "Guru Unspent", subcaption: "DeFi Community" },
+    { href: "https://unspent.cash/s?q=eJwrWymSLzSVO30Nv5%2Fkk3XaCw9OqzV5%2F2J5xxoAhj0L9g%3D%3D", src: "https://i.postimg.cc/8Ft68f9T/koala.png", caption: "Currumbin Wildlife Hospital Unspent", subcaption: "DeFi Community" },
+    { href: "https://unspent.cash/s?q=eJwrWyly6%2FGBQ1J7kj4zcBz4NT1vk0%2FSztpbHWsAtGYOCQ%3D%3D", src: "https://i.postimg.cc/jnzqbG26/elephants.png", caption: "Global Sanctuary for Elephants Unspent", subcaption: "DeFi Community" },
+    { href: "https://unspent.cash/s?q=eJwrWylS6OEXxvnDZ%2BWUlatMS%2F%2FlXzeU2jazYw0AkugMKg%3D%3D", src: "https://i.postimg.cc/xNKj2W8y/treehousehumane.png", caption: "Tree House Humane Society Unspent", subcaption: "DeFi Community" },
+    { href: "https://www.coingecko.com/en/coins/mother-iggy", src: "https://i.postimg.cc/HrwnmCGT/MOTHER.png", caption: "MOTHER", subcaption: "DeFi Community", stats: "Get with BCH on Trocador" },
+    { href: "https://bchnostr.com/?ref=5369b58d5089b26829e5fad4f6c76b9ab8250226e24a99cbbac1200f42bbfa09", src: "https://i.postimg.cc/Cx84BqXy/bchnostr.png", caption: "BCHNostr", subcaption: "DeFi Community" },
+    { href: "https://gaze.cash/channel.html?chan=AAACHg", src: "https://i.postimg.cc/BtDYCYbg/a-tasteful-artistic-black-and-white-silhouette-of-a-c.jpg", caption: "Aurora", subcaption: "DeFi Community", stats: "Free Gaze.Cash Porn Channel" },
+    { href: "https://unspent.cash/", src: "https://i.postimg.cc/Hj5tX2Xh/unspent.png", caption: "Unspent", subcaption: "DeFi Community" },
+    { href: "https://afifthofgaming.com/", src: "https://i.postimg.cc/r0RNhGbd/afog.png", caption: "AFOG", subcaption: "DeFi Community" },
+    { href: "https://bchbull.com/", src: "https://i.postimg.cc/G8TxMPN8/bchbull-dark.png", caption: "BCH Bull", subcaption: "DeFi Community" },
+    { href: "https://bch.games/", src: "https://i.postimg.cc/G8TxMPNs/BCHgames.png", caption: "BCH.games", subcaption: "DeFi Community" },
+    { href: "https://bchpump.cash/pump/about", src: "https://i.postimg.cc/MMfms041/bchpump.png", caption: "BCH PUMP", subcaption: "DeFi Community" },
+    { href: "https://www.cauldron.quest/", src: "https://i.postimg.cc/t7HBrwqP/cauldron.png", caption: "Cauldron DEX", subcaption: "DeFi Community" },
+    { href: "https://tapswap.cash/", src: "https://i.postimg.cc/3WpZmBmt/tapsw-ap-dark.png", caption: "TapSwap DEX", subcaption: "DeFi Community" },
+    { href: "https://dropship.cash/", src: "https://i.postimg.cc/QCC4916X/dropship-icon.png", caption: "DropShip", subcaption: "DeFi Community" },
+    { href: "https://app.bch.guru/#/", src: "https://i.postimg.cc/CzxF7Db4/gurulogo.png", caption: "BCH Guru", subcaption: "DeFi Community" },
+    { href: "https://tokenaut.cash/", src: "https://i.postimg.cc/7PtQvt6k/tokenaut.png", caption: "Tokenaut", subcaption: "DeFi Community" },
+    { href: "defillama.com/chain/Bitcoincash", src: "https://i.postimg.cc/QKLkv9Gy/defillama.png", caption: "DeFi Llama", subcaption: "DeFi Community" },
+    { href: "https://paryonusd.com/app", src: "https://i.postimg.cc/xcnP4jdH/paryonusd.png", caption: "ParyonUSD", subcaption: "DeFi Community" },
+
+    // Self Custody / Paper Wallet
+    { href: "https://atomicwallet.io/", src: "https://i.postimg.cc/jnXk42cB/atomic.jpg", caption: "Atomic Wallet", subcaption: "Self Custody" },
+    { href: "https://stamps.cash/#/", src: "https://i.postimg.cc/Hc6gx7rS/stamps.png", caption: "CashStamps", subcaption: "Self Custody" },
+    { href: "https://moca.app/", src: "https://i.postimg.cc/hhzWWcJY/moca.png", caption: "Moca", subcaption: "Self Custody" },
+    { href: "https://wallet.bitcoin.com/", src: "https://i.postimg.cc/5Y4Jbm2P/bcom-logo.png", caption: "Bitcoin.com", subcaption: "Self Custody" },
+    { href: "https://electroncash.org/", src: "https://i.postimg.cc/8JZS5r7B/electroncash.png", caption: "Electron Cash", subcaption: "Self Custody" },
+    { href: "https://cakewallet.com/", src: "https://i.postimg.cc/MM6wqYp3/cakewallet.png", caption: "Cake Wallet", subcaption: "Self Custody" },
+    { href: "https://cashonize.com/", src: "https://i.postimg.cc/9Rm2CBQN/cashonize.png", caption: "Cashonize", subcaption: "Self Custody" },
+    { href: "https://cashaddress.org/", src: "https://i.postimg.cc/vgYybvZq/cashaddress.png", caption: "Cash Address", subcaption: "Self Custody" },
+    { href: "https://flowee.org/products/pay", src: "https://i.postimg.cc/vg0sB647/Flowee-Pay.png", caption: "Flowee Pay", subcaption: "Self Custody" },
+    { href: "https://www.optnlabs.com/", src: "https://i.postimg.cc/TLt6wWKJ/optn.png", caption: "OPTN", subcaption: "Self Custody" },
+    { href: "https://www.paytaca.com/", src: "https://i.postimg.cc/2b0D6B1G/paytaca.png", caption: "Paytaca", subcaption: "Self Custody" },
+    { href: "https://selene.cash/", src: "https://i.postimg.cc/qh1TRCN1/selene.png", caption: "Selene", subcaption: "Self Custody" },
+    { href: "https://stackwallet.com/", src: "https://i.postimg.cc/0MVsQJzW/stack.png", caption: "Stack Wallet", subcaption: "Self Custody" },
+
+    // Privacy
+    { href: "https://atomicmail.io/app", src: "https://i.postimg.cc/6yQN1xZB/atomicmail.jpg", caption: "Atomic Mail", subcaption: "Privacy", stats: "Private Email" },
+    { href: "https://www.bitgree.com/", src: "https://i.postimg.cc/DSkcrSZn/bitgree.png", caption: "Bitgree", subcaption: "Privacy", stats: "Use or earn Bitcoin Cash privately" },
+    { href: "https://trocador.app/en/", src: "https://i.postimg.cc/kBPStkX1/trocador.png", caption: "Trocador", subcaption: "Privacy", stats: "Swap USDC (SOL) to ZANO No KYC" },
+    { href: "https://stealths.net/", src: "https://i.postimg.cc/jLpPYPwJ/stealths.png", caption: "Stealths", subcaption: "Privacy" },
+    { href: "https://cashfusion.org/", src: "https://i.postimg.cc/sMZyfX9B/Cash-Fusion.png", caption: "CashFusion", subcaption: "Privacy", stats: "Anonymize Your Bitcoin Cash" },
+    { href: "https://ariavpn.net/", src: "https://i.postimg.cc/PC8hfxzP/aria.png", caption: "Aria", subcaption: "Privacy", stats: "Virtual Private Network (VPN)" },
+    { href: "https://mullvad.net/en", src: "https://i.postimg.cc/v46M8BLD/mullvad.png", caption: "Mullvad", subcaption: "Privacy", stats: "Virtual Private Network (VPN)" },
+    { href: "https://www.privateinternetaccess.com/", src: "https://i.postimg.cc/18NPRtcn/pia.png", caption: "PIA", subcaption: "Privacy", stats: "Virtual Private Network (VPN)" },
+
+    // Explorers
+    { href: "https://explorer.moca.app/chainDetails?chain=bitcoincash", src: "https://i.postimg.cc/56b35mVM/mocaexplorer.png", caption: "Moca Explorer", subcaption: "Explorers" },
+    { href: "https://cashtokenmarkets.bch-1.org/", src: "https://i.postimg.cc/k61x6Ft9/cashtokenmarkets.png", caption: "CashToken Markets", subcaption: "Explorers" },
+    { href: "https://3xpl.com/bitcoin-cash", src: "https://i.postimg.cc/VrGjrBbc/3xpl.png", caption: "3xpl", subcaption: "Explorers" },
+    { href: "https://bchexplorer.cash/", src: "https://i.postimg.cc/9R8GRtqc/melroy.png", caption: "Melroy", subcaption: "Explorers" },
+    { href: "https://blockchain.com/explorer/assets/bch", src: "https://i.postimg.cc/zbtnbSRr/blockchaincom.png", caption: "Blockchain.com", subcaption: "Explorers" },
+    { href: "https://blockchair.com/bitcoin-cash", src: "https://i.postimg.cc/BLYxLc14/blockchair.png", caption: "Blockchair", subcaption: "Explorers" },
+    { href: "https://tokenexplorer.cash/", src: "https://i.postimg.cc/2VR4qxHq/bitcoincash.png", caption: "BCMR Token", subcaption: "Explorers" },
+    { href: "https://explorer.salemkode.com/", src: "https://i.postimg.cc/2VR4qxHq/bitcoincash.png", caption: "Salem Kode", subcaption: "Explorers" },
+    { href: "https://cashflow.dev/graph", src: "https://i.postimg.cc/2VR4qxHq/bitcoincash.png", caption: "Cashflow", subcaption: "Explorers" },
+    { href: "https://tokenstork.com/", src: "https://i.postimg.cc/rKxMRX8v/Token-Stork.png", caption: "TokenStork", subcaption: "Explorers" },
+
+    // Informational
+    { href: "https://www.hijackingbitcoin.com/", src: "https://i.postimg.cc/xkhS6fFc/hijackingbtc.png", caption: "Hijacking Bitcoin", subcaption: "Informational" },
+    { href: "https://minisatoshi.cash/upgrade-history", src: "https://i.postimg.cc/zbpZhC6V/minisatoshi.png", caption: "Minisatoshi", subcaption: "Informational" },
+    { href: "https://bchfaq.com/", src: "https://i.postimg.cc/k6w3SQZk/BCHFAQ.png", caption: "Bitcoin Cash FAQ", subcaption: "Informational" },
+    { href: "https://www.youtube.com/@BitcoinCashUniversity", src: "https://i.postimg.cc/J0C19KQs/BCH-University.png", caption: "BCH University", subcaption: "Informational" },
+    { href: "https://bitcoincash.org/", src: "https://i.postimg.cc/2VR4qxHq/bitcoincash.png", caption: "BitcoinCash.org", subcaption: "Informational" },
+    { href: "https://discover.cash/", src: "https://i.postimg.cc/ygn4RmtN/discover.png", caption: "Discover.Cash", subcaption: "Informational" },
+    { href: "https://whybitcoincash.com/", src: "https://i.postimg.cc/njTbm4gj/whybitcoincash.png", caption: "Why Bitcoin Cash", subcaption: "Informational" },
+    { href: "https://realbitcoin.cash/", src: "https://i.postimg.cc/TLQMbVFT/bitcoincash.png", caption: "Real Bitcoin Cash", subcaption: "Informational" },
+];
+
+function shuffleArray(array) {
+  for (let i=array.length-1; i>0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function populateFigures() {
+  const container = document.getElementById('figures');
+  container.innerHTML = '';
+  figures.forEach(item => {
+    const figure = document.createElement('figure');
+    figure.setAttribute('data-category', item.subcaption);
+    figure.onclick = () => {
+      figure.classList.toggle('show-stats');
+    };
+
+    // Build the inner HTML
+    let figureHTML = `
+      <a href="${item.href}" target="_blank" rel="noopener noreferrer">
+        <img src="${item.src}">
+      </a>
+      <div class="fig-details">
+        <div class="fig-text">
+          <figcaption>${item.caption}</figcaption>
+          <div class="stats">${item.stats || ''}</div>
+        </div>
+      </div>
+    `;
+
+    // Only add the "i" icon if stats exist
+    if (item.stats && item.stats.trim() !== '') {
+      figureHTML += `<div class="info-icon" title="Show/hide stats">i</div>`;
+    }
+
+    figure.innerHTML = figureHTML;
+
+    // Add click handler for the "i" icon if it exists
+    if (item.stats && item.stats.trim() !== '') {
+      const infoIcon = figure.querySelector('.info-icon');
+      infoIcon.onclick = (e) => {
+        e.stopPropagation();
+        figure.classList.toggle('show-stats');
+      };
+    }
+
+    container.appendChild(figure);
+  });
+}
+
+function filterFigures(type, value) {
+  document.querySelectorAll('#figures figure').forEach(fig => {
+    const category = fig.dataset.category.toLowerCase();
+    const captionText = fig.querySelector('figcaption').innerText.toLowerCase();
+    const statsText = fig.querySelector('.stats').innerText.toLowerCase();
+    if (type === 'category') {
+      if (value.toLowerCase() === 'all' || category === value.toLowerCase()) {
+        fig.style.display = '';
+      } else {
+        fig.style.display = 'none';
+      }
+    } else if (type === 'search') {
+      if (value === 'all' || category.includes(value) || captionText.includes(value) || statsText.includes(value)) {
+        fig.style.display = '';
+      } else {
+        fig.style.display = 'none';
+      }
+    }
+  });
+}
+
+const backBtn = document.getElementById('backToTop');
+
+// Initially hide the button
+backBtn.classList.add('hidden');
+
+let hideTimeout = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Dark mode toggle
+  document.body.classList.add('dark-mode');
+  const modeToggle = document.getElementById('mode-toggle');
+  modeToggle.innerHTML = '🌙';
+  modeToggle.onclick = () => {
+    document.body.classList.toggle('dark-mode');
+    modeToggle.innerHTML = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
+  };
+
+  // Populate figures
+  shuffleArray(figures);
+  populateFigures();
+  filterFigures('category', 'All');
+
+  // Search filter
+  document.getElementById('sidebar-search').addEventListener('input', e => {
+    filterFigures('search', e.target.value.toLowerCase());
+  });
+
+  // Category buttons
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.onclick = () => { filterFigures('category', btn.dataset.filter); };
+  });
+
+  // Back to top fade out after scrolling stops
+  // Button initially hidden
+  backBtn.classList.add('hidden');
+
+  window.addEventListener('scroll', () => {
+    // Show the button when scrolling
+    backBtn.classList.remove('hidden');
+
+    // Clear previous timeout if any
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+    }
+    // Set timeout to hide after 2 seconds of no scroll
+    hideTimeout = setTimeout(() => {
+      backBtn.classList.add('hidden');
+    }, 2000);
+  });
+
+  // Back to top click
+  document.getElementById('backToTop').onclick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+});
+</script>
+</body>
+</html>
