@@ -54,9 +54,8 @@
     padding: 20px 15px;
     display: flex; flex-direction: column; align-items: center;
     width: 160px; overflow-y: auto; z-index: 1000;
-    /* Removed transition to prevent flashing */
-    /* transition: background 0.3s; */
     min-height: 100vh;
+    justify-content: space-between; /* To push bottom button down */
   }
   #sidebar::-webkit-scrollbar {
     width: 6px;
@@ -81,7 +80,6 @@
     box-shadow: 0 0 8px #2980b9;
     border-color: #2980b9;
   }
-  /* Removed sidebar title as per request */
   #categoriesContainer {
     display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 20px;
   }
@@ -101,7 +99,7 @@
 #content {
     margin-left: 160px; padding: 30px 20px; flex: 1;
     transition: margin-left 0.3s;
-  }
+}
 @media (max-width: 768px) {
   #sidebar {
     width: 140px;
@@ -138,17 +136,14 @@
     font-family: 'Pacifico', cursive; font-size: 1.1em; margin-top: 8px; color: var(--caption-color);
     text-align: center;
   }
-  /* The description stats as toggleable panel */
   .stats {
     margin-top: 6px; font-size: 0.85em; font-style: italic; color: var(--caption-color);
     display: none;
-    cursor: pointer; /* Indicate toggleability */
+    cursor: pointer;
   }
   .show-stats .stats {
     display: block;
   }
-  /* Info icon, now removed info icons from figures */
-  /* .info-icon { ... } */ /* Removed as per request */
   /* Back to top button */
   #backToTop {
     position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
@@ -162,15 +157,77 @@
   #backToTop:hover {
     background: #2980b9; transform: scale(1.1);
   }
-  /* Additional styles for message links if needed */
-.message-container a {
-    color: var(--blue-color); text-decoration: underline;
-}
+
+  /* About Button in sidebar bottom corner, styled to match theme */
+  #aboutButton {
+    margin-top: auto; /* push to bottom of flex container */
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background-color: transparent;
+    border: 2px solid var(--blue-color);
+    border-radius: 6px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.9em;
+    color: var(--blue-color);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #aboutButton:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+  }
+
+  /* Modal overlay, centered on screen, inherits theme variables */
+  #aboutModal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex; /* Center content */
+    align-items: center; /* Vertical center */
+    justify-content: center; /* Horizontal center */
+    z-index: 1200;
+  }
+  #aboutModalContent {
+    background: var(--figure-bg);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-family: 'Ubuntu', Arial, sans-serif;
+  }
+  #aboutModalContent h2 {
+    margin-top: 0;
+    font-family: 'Pacifico', cursive;
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: var(--blue-color);
+  }
+  #aboutModalContent p {
+    line-height: 1.5;
+    font-size: 1em;
+    color: var(--text-color);
+  }
+  #aboutModalContent a {
+    color: var(--blue-color);
+    text-decoration: underline;
+  }
+  #closeAbout {
+    margin-top: 15px;
+    padding: 8px 16px;
+    border: none;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
 </style>
 </head>
 
-<script data-goatcounter="https://unspentlibrary.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+<!-- GoatCounter Script -->
+<script data-goatcounter="https://unspentlibrary.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <body>
 
 <!-- Dark Mode Toggle -->
@@ -178,8 +235,9 @@
 
 <!-- Sidebar -->
 <div id="sidebar">
-  <!-- Removed title as per request -->
+  <!-- Search -->
   <input type="search" id="sidebar-search" placeholder="Search..." />
+  <!-- Categories -->
   <div id="categoriesContainer">
     <button class="category-btn" data-filter="All"><span>All</span></button>
     <button class="category-btn" data-filter="Water and Hygiene"><span>Water & Hygiene</span></button>
@@ -188,6 +246,8 @@
     <button class="category-btn" data-filter="Environment"><span>Environment</span></button>
     <button class="category-btn" data-filter="Animals"><span>Animals</span></button>
   </div>
+  <!-- About Button at bottom -->
+  <button id="aboutButton">About</button>
 </div>
 
 <!-- Main Content -->
@@ -196,8 +256,19 @@
   <div id="figures"></div>
 </div>
 
-<!-- Back to Top Button -->
+<!-- Back to Top -->
 <div id="backToTop">↑</div>
+
+<!-- About Modal Centered -->
+<div id="aboutModal">
+  <div id="aboutModalContent">
+    <h2>About</h2>
+    <p>
+      Value derives from ideas given attention, therefore our world requires stewards capable of giving to the right ideas. Join our pursuit to help aid the kind of wonderful ideas The Giving Block supports. Verify gratuity addresses by visiting the <a href="https://thegivingblock.org" target="_blank" rel="noopener noreferrer">thegivingblock.org</a>
+    </p>
+    <button id="closeAbout">Close</button>
+  </div>
+</div>
 
 <script>
 const figures = [
@@ -243,13 +314,10 @@ function populateFigures() {
   container.innerHTML = '';
   figures.forEach(item => {
     const figure = document.createElement('figure');
-    // Store category label for filtering
     figure.setAttribute('data-category', item.categoryLabel);
-    // When clicking on figure, toggle description
     figure.onclick = () => {
       figure.classList.toggle('show-stats');
     };
-
     let figureHTML = `
       <a href="${item.href}" target="_blank" rel="noopener noreferrer">
         <img src="${item.src}">
@@ -262,7 +330,6 @@ function populateFigures() {
       </div>
     `;
     figure.innerHTML = figureHTML;
-
     container.appendChild(figure);
   });
 }
@@ -301,6 +368,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const modeToggle = document.getElementById('mode-toggle');
   document.body.classList.add('dark-mode');
   modeToggle.innerHTML = '🌙';
+
+  // Theme toggle
   modeToggle.onclick = () => {
     document.body.classList.toggle('dark-mode');
     modeToggle.innerHTML = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
@@ -310,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
   populateFigures();
   filterFigures('category', 'All');
 
+  // Search
   document.getElementById('sidebar-search').addEventListener('input', e => {
     filterFigures('search', e.target.value.toLowerCase());
   });
@@ -320,10 +390,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sidebar-search').style.boxShadow = '';
   });
 
+  // Category buttons
   document.querySelectorAll('.category-btn').forEach(btn => {
     btn.onclick = () => { filterFigures('category', btn.dataset.filter); };
   });
 
+  // Back to top
   window.addEventListener('scroll', () => {
     backBtn.classList.remove('hidden');
     if (hideTimeout) clearTimeout(hideTimeout);
@@ -334,6 +406,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('backToTop').onclick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // About Button
+  const aboutBtn = document.getElementById('aboutButton');
+  const aboutModal = document.getElementById('aboutModal');
+  const closeBtn = document.getElementById('closeAbout');
+
+  aboutBtn.onclick = () => {
+    aboutModal.style.display = 'flex';
+  };
+  closeBtn.onclick = () => {
+    aboutModal.style.display = 'none';
+  };
+  aboutModal.addEventListener('click', (e) => {
+    if (e.target === aboutModal) {
+      aboutModal.style.display = 'none';
+    }
+  });
 });
 </script>
 </body>
