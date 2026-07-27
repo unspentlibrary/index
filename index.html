@@ -55,7 +55,7 @@
     display: flex; flex-direction: column; align-items: center;
     width: 160px; overflow-y: auto; z-index: 1000;
     min-height: 100vh;
-    justify-content: space-between; /* To push bottom button down */
+    justify-content: flex-start; /* changed from space-between to start for better spacing */
   }
   #sidebar::-webkit-scrollbar {
     width: 6px;
@@ -158,9 +158,8 @@
     background: #2980b9; transform: scale(1.1);
   }
 
-  /* About Button in sidebar bottom corner, styled to match theme */
+  /* About Button in sidebar top corner, styled to match theme */
   #aboutButton {
-    margin-top: auto; /* push to bottom of flex container */
     margin-bottom: 10px;
     padding: 8px 12px;
     background-color: transparent;
@@ -235,6 +234,8 @@
 
 <!-- Sidebar -->
 <div id="sidebar">
+  <!-- Moved About Button to top -->
+  <button id="aboutButton">About</button>
   <!-- Search -->
   <input type="search" id="sidebar-search" placeholder="Search..." />
   <!-- Categories -->
@@ -246,8 +247,6 @@
     <button class="category-btn" data-filter="Environment"><span>Environment</span></button>
     <button class="category-btn" data-filter="Animals"><span>Animals</span></button>
   </div>
-  <!-- About Button at bottom -->
-  <button id="aboutButton">About</button>
 </div>
 
 <!-- Main Content -->
