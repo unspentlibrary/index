@@ -46,6 +46,10 @@
     color: var(--text-color);
     display: flex; min-height: 100vh;
   }
+  /* Light mode sunrise gradient background */
+  body:not(.dark-mode) {
+    background: linear-gradient(to right, #ffe259, #ff7e5f);
+  }
   /* Sidebar styles */
   #sidebar {
     position: fixed; top: 0; left: 0; height: 100%;
